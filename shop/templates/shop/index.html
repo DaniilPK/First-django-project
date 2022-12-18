@@ -1,0 +1,153 @@
+{% extends "shop/base.html" %}
+
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block script %}
+<script>
+
+    document.addEventListener('DOMContentLoaded', () => {
+
+    const mediaFiles = document.querySelectorAll('img, video');
+    let i = 0
+
+        console.log('0');
+    Array.from(mediaFiles).forEach((file, index) => {
+            i++
+            console.log(i,mediaFiles.length);
+            if(i === mediaFiles.length) {
+                {#document.getElementById("spinner").className = 'visually-hidden';#}
+            }
+
+    })
+
+})
+</script>
+{% endblock %}
+
+{% block body %}
+    <main>
+      <section class="py-1 text-center container">
+        <div class="row py-lg-5">
+          <div class="col-lg-6 col-md-8 mx-auto">
+            <h1 class="fw-light">Django example</h1>
+            <p class="lead text-muted">Простой и наглядный пример с <br>выводом, добавлением, изменением</p>
+            <p>
+              <a href="{% url 'create' %}" class="btn btn-primary my-2">Create</a>
+            </p>
+          </div>
+        </div>
+      </section>
+
+        <div class="album py-5 bg-light">
+        <form class="py-2 justify-content-center text-center">
+            {% if request.user.is_authenticated %}
+                {% if filter %}
+                    {% if parament_search is not None %}
+                         <a class="btn btn-outline-dark" href="{% url 'home' %}?search={{ parament_search }}" role="button">Все записи</a>
+                         <a class="btn btn-outline-dark" href="{% url 'filter' %}" role="button">✖{{ parament_search }}</a>
+                    {% else %}
+                        <a class="btn btn-outline-dark" href="{% url 'home' %}" role="button">Все записи</a>
+                    {% endif %}
+                {% else %}
+                    {% if parament_search is not None %}
+                        <a class="btn btn-outline-dark" href="{% url 'filter' %}?search={{ parament_search }}" role="button">Только свои записи</a>
+                        <a class="btn btn-outline-dark" href="{% url 'home' %}" role="button">✖{{ parament_search }}</a>
+                    {% else %}
+                        <a class="btn btn-outline-dark" href="{% url 'filter' %}" role="button">Только свои записи</a>
+                    {% endif %}
+                {% endif %}
+            {% else %}
+                {% if parament_search is not None %}
+                    <a class="btn btn-outline-dark" href="{% url 'home' %}" role="button">✖{{ parament_search }}</a>
+                {% endif %}
+            {% endif %}
+        </form>
+            <div class="container">
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                    {% for el in page_obj %}
+                        <div class="col-md-auto col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                          <div class="card shadow-sm">
+                              {% if el.photo %}
+                                  <img class="bd-placeholder-img card-img-top" width="100%" height="225" src="{{ el.photo.url }}">
+                              {% endif %}
+                            <div class="card-body">
+                              <p class="card-text">{{ el.title }}</p>
+                              <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group">
+                                  <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#exampleModalLong{{ el.id }}">View</button>
+                                  {% if request.user.is_authenticated and request.user.is_superuser or el.username == request.user.username %}
+                                    <a class="btn btn-sm btn-outline-secondary" href="{% url 'update' el.id %}">Edit</a>
+                                    <a class="btn btn-sm btn-outline-secondary" href="{% url 'delete' el.id %}">Delete</a>
+                                  {% endif %}
+                                </div>
+                                  <small class="text-muted">{{ el.time_upate|time }}{{ el.time_upate|date:" d/m/y" }}</small>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+    {% if page_obj.end_index != 0 %}
+        <nav class="mx-auto py-3 bg-light">
+            <ul class="pagination justify-content-center">
+            {% for page_number in page_obj.adjusted_elided_pages %}
+                {% if page_number == page_obj.paginator.ELLIPSIS %}
+                    <li class="page-item">
+                        <a class="page-link">{{ page_number }}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item">
+                            <a class="page-link {% if page_number == page_obj.number %} active {% endif %}" href="?page={{ page_number }}">
+                            {{page_number}}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            </ul>
+        </nav>
+    {% endif %}
+{#    <nav aria-label="Page navigation example">#}
+{#        <ul class="pagination">#}
+{#            {% if page_obj.has_previous %}#}
+{#                <li class="page-item"><a class="page-link" href="?page=1">&laquo; first</a></li>#}
+{#                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>#}
+{#            {% endif %}#}
+{##}
+{#            <li class="page-item"><a class="page-link">{{ page_obj.number }}</a></li>#}
+{##}
+{#            {% if page_obj.has_next %}#}
+{#                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">next</a></li>#}
+{#                <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a></li>#}
+{#            {% endif %}#}
+{#        </ul>#}
+{#    </nav>#}
+{##}
+
+</div>
+    </main>
+
+    <!-- Modal делать гет запрос-->
+{% for el in page_obj %}
+<div class="modal fade bd-example-modal-lg" id="exampleModalLong{{ el.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">{{ el.title }}</h5>
+      </div>
+      <div class="modal-body">
+        {{ el.content }}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+    {% endfor %}
+
+{% endblock %}

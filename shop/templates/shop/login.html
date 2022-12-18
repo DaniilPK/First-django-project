@@ -1,0 +1,38 @@
+{% extends 'shop/base.html' %}
+
+{% block header %}
+<header>
+      <div class="navbar navbar-dark bg-dark shadow-sm">
+        <div class="container">
+              <a href="{% url 'home' %}" class="navbar-brand d-flex align-items-center">
+                <strong>Django</strong>
+              </a>
+        </div>
+      </div>
+    </header>
+{% endblock %}
+{% block body %}
+
+
+    <main class="container">
+        <form method="post">
+
+            {% csrf_token %}
+            <div class="row justify-content-center py-5">
+                <div class="col-4 py-5">
+                    <h1 class="text-center mb-3">{{ title }}</h1>
+                {% for f in form %}
+                    <div class="form-floating mb-3">
+                        {{ f }}
+                        <label for="{{ f.id_for_label }}">{{ f.label }}</label>
+                    </div>
+                {% endfor %}
+                <div class="form-text text-danger">{{ form.non_field_errors }}</div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary mb-5">Войти</button>
+                </div>
+                </div>
+            </div>
+        </form>
+    </main>
+{% endblock %}

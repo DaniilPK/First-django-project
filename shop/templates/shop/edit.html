@@ -1,0 +1,33 @@
+{% extends 'shop/base.html' %}
+
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+
+{% block body %}
+    {% if request.user.is_authenticated and request.user.is_superuser or object.username == request.user.username %}
+    <form method="POST" class="container py-5" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h1>Изменение поста</h1>
+        <div class="form-floating mb-3 py-2">
+            {{ form.title }}
+            <label for="floatingInput" class="py-4">Введите название</label>
+         </div>
+        <div class="form-floating">
+            {{ form.content }}
+            <label for="floatingTextarea2">Введите Описание</label>
+        </div>
+        <div class="py-4">
+            <label for="formFile" class="form-label">Выберите фотографию</label>
+            {{ form.photo }}
+        </div>
+        <button type="submit" class="btn btn-primary">Изменить</button>
+        <div>
+            {{ error }}
+        </div>
+    </form>
+    {% endif %}
+
+{% endblock %}
